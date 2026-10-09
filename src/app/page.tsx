@@ -3,9 +3,11 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { About } from "@/components/sections/about";
 import { ContactPlaceholder } from "@/components/sections/contact-placeholder";
 import { Hero } from "@/components/sections/hero";
-import { PhotographyPlaceholder } from "@/components/sections/photography-placeholder";
+import { PhotographyGallery } from "@/components/sections/photography-gallery";
+import { Portfolio } from "@/components/sections/portfolio";
 import { Services } from "@/components/sections/services";
-import { WorkPlaceholder } from "@/components/sections/work-placeholder";
+import { photographyItems } from "@/content/photography";
+import { portfolioProjects } from "@/content/portfolio";
 
 export default function Home() {
   return (
@@ -14,8 +16,8 @@ export default function Home() {
       <SiteHeader />
       <main id="main-content">
         <Hero />
-        <WorkPlaceholder />
-        <PhotographyPlaceholder />
+        <Portfolio projects={portfolioProjects} />
+        <PhotographyGallery items={photographyItems} />
         <Services />
         <About />
         <ContactPlaceholder />

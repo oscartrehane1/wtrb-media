@@ -1,12 +1,28 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
+import { HeroMedia } from "@/components/media/hero-media";
+import { VideoDialog } from "@/components/media/video-dialog";
+import { heroMedia } from "@/content/portfolio";
+import type { PortfolioProject } from "@/types/media";
 
 export function Hero() {
+  const [showreelOpen, setShowreelOpen] = useState(false);
+  const showreelProject = useMemo<PortfolioProject | null>(() => heroMedia.showreelUrl ? ({
+    id: "showreel",
+    title: "WtRB Media showreel",
+    clientType: "WtRB Media",
+    category: "Showreel",
+    description: "Selected outdoor film and photography production.",
+    aspectRatio: "16:9",
+    poster: heroMedia.poster,
+    video: { src: heroMedia.showreelUrl, type: "video/mp4" },
+  }) : null, []);
+
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
-      <div className="hero__media" aria-hidden="true">
-        <div className="hero__media-grid" />
-        <span className="hero__media-label">Cinematic media placeholder</span>
-      </div>
+      <HeroMedia media={heroMedia} onPlayShowreel={() => setShowreelOpen(true)} />
       <div className="hero__shade" />
       <div className="hero__content page-shell">
         <p className="hero__kicker">Outdoor film &amp; photography</p>
@@ -20,6 +36,7 @@ export function Hero() {
         </div>
       </div>
       <a className="hero__scroll" href="#work"><span>Scroll to explore</span><span aria-hidden="true">↓</span></a>
+      <VideoDialog project={showreelOpen ? showreelProject : null} onClose={() => setShowreelOpen(false)} />
     </section>
   );
 }

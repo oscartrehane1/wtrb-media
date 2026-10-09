@@ -135,6 +135,21 @@ Keep section composition in `components/sections`, reusable primitives in `compo
 - Avoid cumulative layout shift and test on constrained mobile connections.
 - Performance targets for production: Core Web Vitals in the good range and a Lighthouse performance score of at least 90 on representative pages/devices.
 
+### Phase 2 portfolio architecture
+
+- `src/content/portfolio.ts` is the source of truth for hero and video-project records.
+- `src/content/photography.ts` is the source of truth for photography records.
+- `src/types/media.ts` defines the supported media contracts and aspect ratios.
+- Components must render a deliberate placeholder when a media path is `null`; never request a guessed or missing path.
+- Portfolio grid videos are poster-first and must not autoplay. Full video is attached only in the user-opened player.
+- Prefer unlisted YouTube delivery through a configurable `youtubeVideoId`. Create the IFrame Player API instance only after the overlay opens, use the `youtube-nocookie.com` host, and begin muted with standard controls available.
+- Preserve native MP4/WebM playback as the fallback when no YouTube ID is configured.
+- The hero may autoplay only the viewport-appropriate muted source. Do not attach both desktop and mobile sources to the video element.
+- The native hero background must expose a keyboard-accessible sound toggle whenever video is active. Sound may only be enabled following that user interaction.
+- Expanded players and lightboxes must lock background scrolling, trap focus, close with Escape and a visible control, restore focus, and stop video on close.
+- Photography uses `next/image` with truthful intrinsic dimensions, responsive `sizes`, useful alt text, captions, and optional locations.
+- Keep external hosting provider-neutral. Configure exact remote image hosts in `next.config.ts` only when a provider is selected.
+
 ## Enquiry form and security
 
 Collect: name, company/organisation, email, project type, estimated budget, desired timeline, and project description.
