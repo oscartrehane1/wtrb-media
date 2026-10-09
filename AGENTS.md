@@ -163,6 +163,18 @@ Collect: name, company/organisation, email, project type, estimated budget, desi
 - Until delivery is configured, never imply that a message was delivered; provide an honest unavailable/configuration response.
 - Keep secrets server-side and document required environment variables in `.env.example`.
 
+### Phase 3 enquiry implementation
+
+- The public form posts to `src/app/api/enquiries/route.ts`; shared types and authoritative validation live in `src/lib/enquiry/`.
+- Resend is the approved provider. Require `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, and `CONTACT_FROM_EMAIL`; never send or claim success when any is missing.
+- Set the customer's validated email as `Reply-To`. Do not send an automatic acknowledgement or any marketing email.
+- Preserve the 16 KB request limit, strict field limits, same-origin check, hidden honeypot, HTML escaping, and generic provider-error responses.
+- Use Upstash REST or a Vercel Firewall rule for distributed rate limiting. Never replace it with a process-memory-only limiter.
+- When Upstash is configured, require `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, and a secret `RATE_LIMIT_SALT`; fail closed on limiter errors.
+- Do not log request bodies, contact details, provider payloads, or full enquiries.
+- Unit tests use mocked delivery and rate-limit fetchers. Never place live credentials in tests or send real messages during automated validation.
+- YouTube remains behind contextual consent. Opening a project must not load YouTube; only the explicit **Load YouTube film** action may initialise the API/player.
+
 ## SEO and analytics
 
 - Provide descriptive metadata, canonical URL, Open Graph/Twitter imagery, sitemap, robots directives, and Organisation/ProfessionalService structured data where accurate.

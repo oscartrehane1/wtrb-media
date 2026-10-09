@@ -32,7 +32,7 @@ export function SiteHeader() {
   return (
     <header className={`site-header${scrolled || menuOpen ? " site-header--solid" : ""}`}>
       <div className="site-header__inner">
-        <Link className="site-header__brand" href="#top" onClick={() => setMenuOpen(false)}>
+        <Link className="site-header__brand" href="/#top" onClick={() => setMenuOpen(false)}>
           <Wordmark />
         </Link>
 

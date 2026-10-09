@@ -24,8 +24,7 @@ export function SiteFooter() {
         <div className="brand-mark-placeholder" aria-label="Secondary brand mark placeholder">Brand mark</div>
         <p>© {new Date().getFullYear()} WtRB Media</p>
         <div className="site-footer__legal">
-          <Link href="#">Privacy</Link>
-          <Link href="#">Terms</Link>
+          <Link href="/privacy">Privacy</Link>
         </div>
       </div>
     </footer>

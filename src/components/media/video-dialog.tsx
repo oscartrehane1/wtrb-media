@@ -2,6 +2,8 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
+import Link from "next/link";
 import type { PortfolioProject } from "@/types/media";
 import { useDialog } from "@/components/media/use-dialog";
 import { YouTubePlayer } from "@/components/media/youtube-player";
@@ -10,6 +12,19 @@ type VideoDialogProps = {
   project: PortfolioProject | null;
   onClose: () => void;
 };
+
+function PrivateYouTubePlayer({ videoId, title }: { videoId: string; title: string }) {
+  const [allowed, setAllowed] = useState(false);
+  if (allowed) return <YouTubePlayer videoId={videoId} title={title} />;
+
+  return (
+    <div className="youtube-consent">
+      <p>Playing this film loads YouTube&apos;s player. YouTube may receive technical information and use storage on your device.</p>
+      <button className="button button--light" type="button" onClick={() => setAllowed(true)}>Load YouTube film</button>
+      <Link href="/privacy">How embedded video is handled</Link>
+    </div>
+  );
+}
 
 export function VideoDialog({ project, onClose }: VideoDialogProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -48,7 +63,7 @@ export function VideoDialog({ project, onClose }: VideoDialogProps) {
             </button>
             <div className="media-dialog__stage" style={{ aspectRatio: project.aspectRatio.replace(":", " / ") }}>
               {project.youtubeVideoId ? (
-                <YouTubePlayer videoId={project.youtubeVideoId} title={`${project.title} video player`} />
+                <PrivateYouTubePlayer key={project.id} videoId={project.youtubeVideoId} title={`${project.title} video player`} />
               ) : project.video ? (
                 <video
                   ref={videoRef}
