@@ -59,7 +59,7 @@ For production, configure either the documented Upstash variables or an equivale
 
 YouTube is loaded only after a visitor explicitly chooses **Load YouTube film** inside the player. No generic cookie banner is added because the current site has no analytics or advertising trackers and third-party video is gated contextually.
 
-The privacy page intentionally identifies owner-review items. Before publication, approve the controller contact details and retention schedule, review Resend and Zoho processing/transfer terms, and determine whether an ICO data protection fee or registration applies.
+The privacy page identifies WtRB Media as the data controller and uses `hello@wtrbmedia.co.uk` for privacy enquiries. Review the notice whenever the site's data collection, service providers or retention practices change, and periodically confirm whether an ICO data protection fee or registration applies.
 
 ## Portfolio content
 
