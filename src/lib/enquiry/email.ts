@@ -19,8 +19,11 @@ export function createEnquiryEmail(data: EnquiryInput) {
     ["Company / organisation", data.company || "Not provided"],
     ["Email", data.email],
     ["Project type", data.projectType],
+    ["Primary objective", data.objective || "Not provided"],
+    ["Target audience", data.audience || "Not provided"],
+    ["Intended platforms / channels", data.channels || "Not provided"],
     ["Shoot location", data.location || "Not provided"],
-    ["Preferred timeframe", data.timeframe || "Not provided"],
+    ["Desired launch date", data.timeframe || "Not provided"],
     ["Indicative budget", data.budget],
   ];
 

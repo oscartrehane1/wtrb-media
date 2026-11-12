@@ -68,6 +68,7 @@ export function VideoDialog({ project, onClose }: VideoDialogProps) {
                 <video
                   ref={videoRef}
                   controls
+                  muted
                   playsInline
                   preload="metadata"
                   poster={project.poster ?? undefined}

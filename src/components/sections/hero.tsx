@@ -4,12 +4,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { HeroMedia } from "@/components/media/hero-media";
 import { VideoDialog } from "@/components/media/video-dialog";
-import { heroMedia } from "@/content/portfolio";
-import type { PortfolioProject } from "@/types/media";
+import type { HeroMedia as HeroMediaData, PortfolioProject } from "@/types/media";
 
-export function Hero() {
+export function Hero({ media: heroMedia }: { media: HeroMediaData }) {
   const [showreelOpen, setShowreelOpen] = useState(false);
-  const showreelProject = useMemo<PortfolioProject | null>(() => heroMedia.showreelUrl ? ({
+  const showreelProject = useMemo<PortfolioProject | null>(() => heroMedia.showreel || heroMedia.showreelUrl ? ({
     id: "showreel",
     title: "WtRB Media showreel",
     clientType: "WtRB Media",
@@ -17,20 +16,20 @@ export function Hero() {
     description: "Selected outdoor film and photography production.",
     aspectRatio: "16:9",
     poster: heroMedia.poster,
-    video: { src: heroMedia.showreelUrl, type: "video/mp4" },
-  }) : null, []);
+    video: heroMedia.showreel ?? { src: heroMedia.showreelUrl!, type: "video/mp4" },
+  }) : null, [heroMedia]);
 
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
       <HeroMedia media={heroMedia} onPlayShowreel={() => setShowreelOpen(true)} />
       <div className="hero__shade" />
       <div className="hero__content page-shell">
-        <p className="hero__kicker">Outdoor film &amp; photography</p>
-        <h1 id="hero-title" className="hero__title">Stories<br />Made Outside.</h1>
+        <p className="hero__kicker">Creative production &amp; content marketing</p>
+        <h1 id="hero-title" className="hero__title">Stories worth watching.<br /><span>Campaigns built to work.</span></h1>
         <div className="hero__footer">
-          <p>Full-service production for brands that belong beyond the beaten path.</p>
+          <div><p className="hero__lead">Film-led marketing for brands that move people.</p><p className="hero__support">We combine creative strategy, cinematic filmmaking, photography and content marketing to help travel, outdoor and experience-led brands connect with their audiences and inspire action.</p></div>
           <div className="hero__actions">
-            <Link className="button button--light" href="#work">View selected work</Link>
+            <Link className="button button--light" href="#work">Explore our work</Link>
             <Link className="text-link" href="#contact">Start a project <span aria-hidden="true">↘</span></Link>
           </div>
         </div>

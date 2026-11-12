@@ -8,13 +8,18 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "node --no-warnings --experimental-strip-types --test src/lib/enquiry/*.test.ts"
+    "test": "node --no-warnings --experimental-strip-types --test src/lib/enquiry/*.test.ts src/lib/blob-media.test.ts"
   },
   "dependencies": {
+    "@vercel/blob": "^2.9.0",
     "motion": "latest",
-    "next": "latest",
+    "next": "16.4.6",
     "react": "latest",
     "react-dom": "latest"
+  },
+  "overrides": {
+    "@vercel/cli-config": "0.3.8",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "latest",
@@ -22,7 +27,7 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
-    "eslint-config-next": "latest",
+    "eslint-config-next": "16.4.6",
     "tailwindcss": "latest",
     "typescript": "latest"
   }

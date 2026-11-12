@@ -88,7 +88,7 @@ export function HeroMedia({ media, onPlayShowreel }: HeroMediaProps) {
           {soundEnabled ? "Sound on" : "Sound off"}
         </button>
       ) : null}
-      {media.showreelUrl && onPlayShowreel ? (
+      {(media.showreel || media.showreelUrl) && onPlayShowreel ? (
         <button type="button" className="hero__play" onClick={onPlayShowreel} aria-label="Play showreel with sound">
           <span aria-hidden="true">▶</span> Play showreel
         </button>

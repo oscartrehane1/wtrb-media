@@ -10,6 +10,9 @@ const initialValues: EnquiryInput = {
   company: "",
   email: "",
   projectType: "",
+  objective: "",
+  audience: "",
+  channels: "",
   location: "",
   timeframe: "",
   budget: "Prefer to discuss",
@@ -106,6 +109,21 @@ export function EnquiryForm() {
             </div>
             {fieldError("projectType")}
           </fieldset>
+          <div className="form-field form-field--full">
+            <label htmlFor="enquiry-objective">Primary objective <span>Optional</span></label>
+            <textarea id="enquiry-objective" name="objective" rows={3} maxLength={enquiryLimits.objective} placeholder="What should this project help your organisation achieve?" value={values.objective} onChange={(event) => update("objective", event.target.value)} aria-invalid={Boolean(errors.objective)} aria-describedby={describedBy("objective")} />
+            {fieldError("objective")}
+          </div>
+          <div className="form-field">
+            <label htmlFor="enquiry-audience">Target audience <span>Optional</span></label>
+            <input id="enquiry-audience" name="audience" type="text" maxLength={enquiryLimits.audience} placeholder="Who do you want to reach?" value={values.audience} onChange={(event) => update("audience", event.target.value)} aria-invalid={Boolean(errors.audience)} aria-describedby={describedBy("audience")} />
+            {fieldError("audience")}
+          </div>
+          <div className="form-field">
+            <label htmlFor="enquiry-channels">Platforms or channels <span>Optional</span></label>
+            <input id="enquiry-channels" name="channels" type="text" maxLength={enquiryLimits.channels} placeholder="e.g. Website, social, advertising" value={values.channels} onChange={(event) => update("channels", event.target.value)} aria-invalid={Boolean(errors.channels)} aria-describedby={describedBy("channels")} />
+            {fieldError("channels")}
+          </div>
           <div className="form-field">
             <label htmlFor="enquiry-location">Shoot location <span>Optional</span></label>
             <input id="enquiry-location" name="location" type="text" maxLength={enquiryLimits.location} placeholder="e.g. Snowdonia, North Wales / Multiple locations" value={values.location} onChange={(event) => update("location", event.target.value)} aria-invalid={Boolean(errors.location)} aria-describedby={describedBy("location", "enquiry-location-help")} />
@@ -113,7 +131,7 @@ export function EnquiryForm() {
             {fieldError("location")}
           </div>
           <div className="form-field">
-            <label htmlFor="enquiry-timeframe">Preferred timeframe <span>Optional</span></label>
+            <label htmlFor="enquiry-timeframe">Desired launch date <span>Optional</span></label>
             <input id="enquiry-timeframe" name="timeframe" type="text" maxLength={enquiryLimits.timeframe} placeholder="e.g. March 2027 / Flexible" value={values.timeframe} onChange={(event) => update("timeframe", event.target.value)} aria-invalid={Boolean(errors.timeframe)} aria-describedby={describedBy("timeframe")} />
             {fieldError("timeframe")}
           </div>

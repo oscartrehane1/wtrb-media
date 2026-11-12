@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { VideoDialog } from "@/components/media/video-dialog";
 import { Reveal } from "@/components/ui/reveal";
@@ -34,11 +35,12 @@ export function Portfolio({ projects }: PortfolioProps) {
                   )}
                   <span className="portfolio-project__action" aria-hidden="true">{playable ? "Play film" : "Preview"} ↗</span>
                 </span>
-                <span className="portfolio-project__meta">
-                  <span><strong>{project.title}</strong><small>{project.clientType}</small></span>
-                  <span><small>{project.category}</small><small>{project.duration}</small></span>
-                </span>
               </button>
+              <div className="portfolio-project__meta">
+                <span><strong>{project.title}</strong><small>{project.clientType}</small></span>
+                <span><small>{project.category}</small><small>{project.duration}</small></span>
+              </div>
+              {project.caseStudySlug ? <Link className="portfolio-project__link" href={`/work/${project.caseStudySlug}`}>View case study <span aria-hidden="true">↗</span></Link> : null}
             </Reveal>
           );
         })}

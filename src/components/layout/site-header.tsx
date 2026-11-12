@@ -66,7 +66,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <p>Outdoor film and photography<br />from the UK, made anywhere.</p>
+        <p>Film-led marketing for travel,<br />outdoor and experience-led brands.</p>
       </div>
     </header>
   );

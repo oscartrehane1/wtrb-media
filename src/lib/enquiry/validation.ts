@@ -4,6 +4,9 @@ export const enquiryLimits = {
   name: 100,
   company: 150,
   email: 254,
+  objective: 500,
+  audience: 500,
+  channels: 500,
   location: 200,
   timeframe: 120,
   description: 5000,
@@ -23,6 +26,9 @@ export function parseEnquiry(value: unknown): { data: EnquiryInput; errors: Enqu
     company: text(input.company),
     email: text(input.email).toLowerCase(),
     projectType: projectTypes.includes(input.projectType as (typeof projectTypes)[number]) ? input.projectType as (typeof projectTypes)[number] : "",
+    objective: text(input.objective),
+    audience: text(input.audience),
+    channels: text(input.channels),
     location: text(input.location),
     timeframe: text(input.timeframe),
     budget: budgetOptions.includes(input.budget as EnquiryInput["budget"]) ? input.budget as EnquiryInput["budget"] : "Prefer to discuss",
@@ -41,6 +47,9 @@ export function parseEnquiry(value: unknown): { data: EnquiryInput; errors: Enqu
   else if (data.email.length > enquiryLimits.email || !emailPattern.test(data.email)) errors.email = "Enter a valid email address.";
 
   if (!data.projectType) errors.projectType = "Choose a project type.";
+  if (data.objective.length > enquiryLimits.objective) errors.objective = `Use ${enquiryLimits.objective} characters or fewer.`;
+  if (data.audience.length > enquiryLimits.audience) errors.audience = `Use ${enquiryLimits.audience} characters or fewer.`;
+  if (data.channels.length > enquiryLimits.channels) errors.channels = `Use ${enquiryLimits.channels} characters or fewer.`;
   if (data.location.length > enquiryLimits.location) errors.location = `Use ${enquiryLimits.location} characters or fewer.`;
   if (data.timeframe.length > enquiryLimits.timeframe) errors.timeframe = `Use ${enquiryLimits.timeframe} characters or fewer.`;
 

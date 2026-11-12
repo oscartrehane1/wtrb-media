@@ -18,17 +18,17 @@ export const heroMedia: HeroMedia = {
  */
 export const portfolioProjects: PortfolioProject[] = [
   {
-    id: "demonstration-landscape",
-    title: "Landscape film",
-    clientType: "Demonstration project",
-    category: "Brand film",
-    description: "A widescreen project position reserved for an outdoor brand or destination story.",
+    id: "oslo-before-the-winter",
+    title: "Oslo, Before the Winter",
+    clientType: "Independent campaign concept",
+    category: "Destination campaign",
+    description: "An independently produced autumn destination campaign concept. Landscape film in development.",
     aspectRatio: "16:9",
     poster: null,
-    // youtubeVideoId: "UNLISTED_YOUTUBE_VIDEO_ID",
     video: null,
-    duration: "—",
+    duration: "In development",
     featured: true,
+    caseStudySlug: "oslo-before-the-winter",
   },
   {
     id: "demonstration-vertical",

@@ -1,8 +1,10 @@
 export const projectTypes = [
   "Film production",
   "Photography",
-  "Film & photography",
-  "Something else",
+  "Content campaign",
+  "Campaign strategy and creative direction",
+  "Ongoing content partnership",
+  "Not sure yet",
 ] as const;
 
 export const budgetOptions = [
@@ -22,6 +24,9 @@ export type EnquiryInput = {
   company: string;
   email: string;
   projectType: ProjectType | "";
+  objective: string;
+  audience: string;
+  channels: string;
   location: string;
   timeframe: string;
   budget: BudgetOption;

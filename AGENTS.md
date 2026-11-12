@@ -2,12 +2,12 @@
 
 ## Project context
 
-WtRB Media is a UK-based specialist outdoor film and photography production company. The website's job is to showcase cinematic work, establish credibility with commercial clients, and generate qualified enquiries from brands, agencies, tourism organisations, hospitality businesses, and conservation organisations.
+WtRB Media is a UK-based film-led creative production and content marketing studio specialising in travel, tourism, outdoor adventure and experience-led brands. The website's job is to showcase cinematic work, communicate the wider strategic and campaign offering, establish credibility with commercial clients, and generate qualified enquiries.
 
 - Business: WtRB Media
 - Domain: `wtrbmedia.co.uk`
 - Tagline: **Stories Made Outside.**
-- Positioning: a premium, capable, full-service production company—not a general-purpose freelance videographer
+- Positioning: a premium, capable creative studio combining strategy, film and photography production, content delivery and proportionate performance review—not a general-purpose freelance videographer or a generic marketing agency
 - Primary environments: mountains, coastlines, forests, oceans, and remote landscapes
 - Initial product: a single-page marketing and portfolio website with no database or CMS
 

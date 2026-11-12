@@ -18,8 +18,14 @@ export function PhotographyGallery({ items }: PhotographyGalleryProps) {
 
   const goTo = useCallback((index: number) => {
     const nextIndex = (index + items.length) % items.length;
-    const slide = trackRef.current?.children[nextIndex] as HTMLElement | undefined;
-    slide?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
+    const track = trackRef.current;
+    const slide = track?.children[nextIndex] as HTMLElement | undefined;
+    if (track && slide) {
+      track.scrollTo({
+        left: slide.offsetLeft - (track.clientWidth - slide.clientWidth) / 2,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    }
     setActiveIndex(nextIndex);
   }, [items.length, reduceMotion]);
 
@@ -29,12 +35,25 @@ export function PhotographyGallery({ items }: PhotographyGalleryProps) {
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visible) setActiveIndex(Number((visible.target as HTMLElement).dataset.index));
-    }, { root: track, threshold: [0.5, 0.75] });
-    Array.from(track.children).forEach((slide) => observer.observe(slide));
-    return () => observer.disconnect();
+    let frame = 0;
+    const updateActiveSlide = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const trackCenter = track.scrollLeft + track.clientWidth / 2;
+        const slides = Array.from(track.children) as HTMLElement[];
+        const closest = slides.reduce((best, slide) => {
+          const distance = Math.abs(slide.offsetLeft + slide.offsetWidth / 2 - trackCenter);
+          return distance < best.distance ? { index: Number(slide.dataset.index), distance } : best;
+        }, { index: 0, distance: Number.POSITIVE_INFINITY });
+        setActiveIndex(closest.index);
+      });
+    };
+    updateActiveSlide();
+    track.addEventListener("scroll", updateActiveSlide, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      track.removeEventListener("scroll", updateActiveSlide);
+    };
   }, []);
 
   useEffect(() => {

@@ -1,22 +1,34 @@
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { About } from "@/components/sections/about";
+import { Approach } from "@/components/sections/approach";
 import { Contact } from "@/components/sections/contact";
 import { Hero } from "@/components/sections/hero";
 import { PhotographyGallery } from "@/components/sections/photography-gallery";
 import { Portfolio } from "@/components/sections/portfolio";
 import { Services } from "@/components/sections/services";
+import { Sectors } from "@/components/sections/sectors";
+import { Strategy } from "@/components/sections/strategy";
 import { photographyItems } from "@/content/photography";
-import { portfolioProjects } from "@/content/portfolio";
+import { heroMedia, portfolioProjects } from "@/content/portfolio";
+import { getBlobVideos } from "@/lib/blob-media";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const videos = await getBlobVideos();
+  const resolvedHero = { ...heroMedia, desktop: videos["hero-desktop"] ?? heroMedia.desktop, mobile: videos["hero-mobile"] ?? heroMedia.mobile, showreel: videos.showreel ?? heroMedia.showreel };
+  const projects = portfolioProjects.map((project, index) => {
+    const video = videos[`work-${String(index + 1).padStart(2, "0")}`];
+    return video ? { ...project, video, youtubeVideoId: undefined, externalUrl: undefined } : project;
+  });
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
     name: "WtRB Media",
     url: "https://wtrbmedia.co.uk",
     email: "hello@wtrbmedia.co.uk",
-    description: "Independent outdoor film and photography production business based in the South of England and available for productions across the UK and internationally.",
+    description: "Creative production and content marketing studio for travel, tourism, outdoor adventure and experience-led brands.",
     areaServed: ["United Kingdom", "International"],
     slogan: "Stories Made Outside.",
   };
@@ -27,10 +39,13 @@ export default function Home() {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <SiteHeader />
       <main id="main-content">
-        <Hero />
-        <Portfolio projects={portfolioProjects} />
+        <Hero media={resolvedHero} />
+        <Portfolio projects={projects} />
         <PhotographyGallery items={photographyItems} />
+        <Strategy />
         <Services />
+        <Approach />
+        <Sectors />
         <About />
         <Contact />
       </main>

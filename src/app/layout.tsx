@@ -8,24 +8,24 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfa
 export const metadata: Metadata = {
   metadataBase: new URL("https://wtrbmedia.co.uk"),
   title: {
-    default: "WtRB Media | Outdoor Film & Photography Production",
+    default: "WtRB Media | Creative Production & Content Marketing",
     template: "%s | WtRB Media",
   },
-  description: "Cinematic outdoor film production and commercial photography for adventure brands, tourism destinations and outdoor experiences across the UK and internationally.",
+  description: "Strategy-led filmmaking, photography and content marketing for travel, tourism, outdoor and adventure brands. From creative concepts to coordinated campaigns.",
   alternates: { canonical: "/" },
-  keywords: ["outdoor film production", "outdoor videographer UK", "commercial outdoor photography", "tourism film production", "adventure brand videography"],
+  keywords: ["creative production studio", "content marketing studio", "tourism film production", "outdoor brand filmmaking", "travel content campaigns"],
   openGraph: {
     type: "website",
     url: "/",
     siteName: "WtRB Media",
-    title: "WtRB Media — Stories Made Outside",
-    description: "Outdoor film and photography production for brands, destinations and experiences.",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "WtRB Media — Stories Made Outside" }],
+    title: "WtRB Media — Creative Production & Content Marketing",
+    description: "Film-led marketing for travel, outdoor and experience-led brands.",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "WtRB Media — Stories worth watching. Campaigns built to work." }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WtRB Media — Stories Made Outside",
-    description: "Outdoor film and photography production for brands, destinations and experiences.",
+    title: "WtRB Media — Creative Production & Content Marketing",
+    description: "Film-led marketing for travel, outdoor and experience-led brands.",
     images: ["/opengraph-image"],
   },
 };
