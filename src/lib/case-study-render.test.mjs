@@ -63,6 +63,7 @@ test("responsive media contracts preserve ratios, bounded vertical widths and re
   const css = readFileSync(resolve(root, "app/globals.css"), "utf8");
   assert.match(css, /\.case-film__frame \{[^}]*aspect-ratio: 16 \/ 9/);
   assert.match(css, /\.case-film__frame--vertical \{ aspect-ratio: 9 \/ 16/);
+  assert.match(css, /\.case-media \.media-dialog__panel \{[^}]*min-height: 0;[^}]*overflow-y: auto/);
   assert.match(css, /\.case-media__vertical \{[^}]*auto-fit[^}]*min\(100%, 15rem\)/);
   assert.match(css, /\.case-photos \{[^}]*minmax\(0, 1fr\)/);
   assert.match(css, /prefers-reduced-motion: reduce[^}]*\.case-photos__button:hover img \{ transform: none/s);

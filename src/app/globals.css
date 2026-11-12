@@ -298,6 +298,7 @@ h1, h2, h3 { font-weight: 500; }
 .case-study > .detail-cta { margin-bottom: clamp(6rem, 12vw, 10rem); }
 
 .case-media { display: grid; gap: clamp(2.5rem, 6vw, 5rem); }
+.case-media .media-dialog__panel { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .case-media__section { min-width: 0; }
 .case-media__section > h2 { margin: 0 0 1.5rem; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 500; letter-spacing: -0.025em; line-height: 1.2; }
 .case-media__empty { margin: 0; padding-block: 2rem; border-block: 1px solid color-mix(in srgb, var(--ivory) 16%, transparent); color: var(--sage); }
