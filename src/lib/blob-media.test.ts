@@ -80,8 +80,16 @@ test("renamed, nested, suffixed and unsupported files no longer occupy a slot", 
   }
 });
 
-test("rejects private, invalid and non-Blob media URLs", () => {
-  for (const url of ["invalid", "https://example.com/a.mp4", "http://example.public.blob.vercel-storage.com/a.mp4", "https://example.private.blob.vercel-storage.com/a.mp4"]) {
+test("private videos resolve to the restricted website streaming route", async () => {
+  const privateUrl = "https://example.private.blob.vercel-storage.com/work-01.mp4";
+  assert.equal(matchBlobVideo("work-01.mp4", privateUrl)?.video.src, "/api/media/work-01.mp4");
+  const videos = await readBlobVideos(async () => ({ blobs: [{ ...blob("work-01.mp4"), url: privateUrl }], hasMore: false }), true);
+  assert.match(videos["work-01"].src, /^\/api\/media\/work-01\.mp4\?v=/);
+  assert.doesNotMatch(videos["work-01"].src, /private\.blob/);
+});
+
+test("rejects invalid and non-Blob media URLs", () => {
+  for (const url of ["invalid", "https://example.com/a.mp4", "http://example.public.blob.vercel-storage.com/a.mp4"]) {
     assert.equal(matchBlobVideo("work-02.mp4", url), null);
   }
 });

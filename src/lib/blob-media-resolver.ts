@@ -4,13 +4,19 @@ export type VideoBlob = { pathname: string; url: string; uploadedAt: Date; etag:
 type BlobPage = { blobs: VideoBlob[]; hasMore: boolean; cursor?: string };
 type ListPage = (options: { cursor?: string; limit: number; abortSignal: AbortSignal }) => Promise<BlobPage>;
 
+export function isVideoFilename(pathname: string) {
+  return /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.test(pathname);
+}
+
 export function matchBlobVideo(pathname: string, source: string): { slot: string; video: MediaSource } | null {
   const match = /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.exec(pathname);
   if (!match) return null;
   try {
     const url = new URL(source);
-    if (url.protocol !== "https:" || !url.hostname.endsWith(".public.blob.vercel-storage.com") || url.username || url.password) return null;
-    return { slot: match[1], video: { src: source, type: match[2] === "mp4" ? "video/mp4" : "video/webm" } };
+    const publicBlob = url.hostname.endsWith(".public.blob.vercel-storage.com");
+    const privateBlob = url.hostname.endsWith(".private.blob.vercel-storage.com");
+    if (url.protocol !== "https:" || (!publicBlob && !privateBlob) || url.username || url.password) return null;
+    return { slot: match[1], video: { src: privateBlob ? `/api/media/${pathname}` : source, type: match[2] === "mp4" ? "video/mp4" : "video/webm" } };
   } catch {
     return null;
   }
@@ -46,10 +52,10 @@ export async function readBlobVideos(listPage: ListPage, configured: boolean, on
     for (const blob of candidates.values()) {
       const match = matchBlobVideo(blob.pathname, blob.url);
       if (!match || videos[match.slot]?.type === "video/mp4") continue;
-      const url = new URL(match.video.src);
+      const url = new URL(match.video.src, "https://media.internal");
       // Changed bytes or a replacement upload produces a new browser cache key.
       url.searchParams.set("v", `${blob.etag}-${blob.uploadedAt.getTime()}`);
-      videos[match.slot] = { ...match.video, src: url.toString() };
+      videos[match.slot] = { ...match.video, src: match.video.src.startsWith("/") ? `${url.pathname}${url.search}` : url.toString() };
     }
     return videos;
   } catch {
