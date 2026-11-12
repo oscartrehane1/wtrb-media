@@ -8,6 +8,26 @@ export function isVideoFilename(pathname: string) {
   return /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.test(pathname);
 }
 
+export function isThumbnailFilename(pathname: string) {
+  return /^(showreel|work-0[1-4])\.(jpg|webp)$/.test(pathname);
+}
+
+function blobAccess(source: string) {
+  try {
+    const url = new URL(source);
+    if (url.protocol !== "https:" || url.username || url.password) return null;
+    if (url.hostname.endsWith(".public.blob.vercel-storage.com")) return "public";
+    if (url.hostname.endsWith(".private.blob.vercel-storage.com")) return "private";
+  } catch { /* Invalid source must not publish media. */ }
+  return null;
+}
+
+function thumbnailSource(blob: VideoBlob) {
+  if (!isThumbnailFilename(blob.pathname)) return null;
+  const access = blobAccess(blob.url);
+  return access === "private" ? `/api/thumbnails/${blob.pathname}` : access === "public" ? blob.url : null;
+}
+
 export function matchBlobVideo(pathname: string, source: string): { slot: string; video: MediaSource } | null {
   const match = /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.exec(pathname);
   if (!match) return null;
@@ -23,9 +43,10 @@ export function matchBlobVideo(pathname: string, source: string): { slot: string
 }
 
 /** Resolve a fresh complete listing each time; never retain removed slots in memory. */
-export async function readBlobVideos(listPage: ListPage, configured: boolean, onUnavailable: () => void = () => {}) {
+export async function readBlobMedia(listPage: ListPage, configured: boolean, onUnavailable: () => void = () => {}) {
   const videos: Record<string, MediaSource> = {};
-  if (!configured) return videos;
+  const thumbnails: Record<string, string> = {};
+  if (!configured) return { videos, thumbnails };
   let cursor: string | undefined;
   const seen = new Set<string>();
   const candidates = new Map<string, VideoBlob>();
@@ -34,7 +55,7 @@ export async function readBlobVideos(listPage: ListPage, configured: boolean, on
     do {
       const page = await listPage({ cursor, limit: 1000, abortSignal });
       for (const blob of page.blobs) {
-        if (!matchBlobVideo(blob.pathname, blob.url)) continue;
+        if (!matchBlobVideo(blob.pathname, blob.url) && !thumbnailSource(blob)) continue;
         const previous = candidates.get(blob.pathname);
         // Duplicate paths are normally prohibited by Blob; resolve defensively
         // by upload time and ETag so pagination order cannot change the winner.
@@ -50,16 +71,31 @@ export async function readBlobVideos(listPage: ListPage, configured: boolean, on
     } while (cursor);
 
     for (const blob of candidates.values()) {
+      const image = thumbnailSource(blob);
+      if (image) {
+        const slot = blob.pathname.replace(/\.(jpg|webp)$/, "");
+        const existing = thumbnails[slot];
+        if (existing && new URL(existing, "https://media.internal").pathname.endsWith(".webp")) continue;
+        thumbnails[slot] = versionedSource(image, blob);
+        continue;
+      }
       const match = matchBlobVideo(blob.pathname, blob.url);
       if (!match || videos[match.slot]?.type === "video/mp4") continue;
-      const url = new URL(match.video.src, "https://media.internal");
-      // Changed bytes or a replacement upload produces a new browser cache key.
-      url.searchParams.set("v", `${blob.etag}-${blob.uploadedAt.getTime()}`);
-      videos[match.slot] = { ...match.video, src: match.video.src.startsWith("/") ? `${url.pathname}${url.search}` : url.toString() };
+      videos[match.slot] = { ...match.video, src: versionedSource(match.video.src, blob) };
     }
-    return videos;
+    return { videos, thumbnails };
   } catch {
     onUnavailable();
-    return {};
+    return { videos: {}, thumbnails: {} };
   }
+}
+
+function versionedSource(source: string, blob: VideoBlob) {
+  const url = new URL(source, "https://media.internal");
+  url.searchParams.set("v", `${blob.etag}-${blob.uploadedAt.getTime()}`);
+  return source.startsWith("/") ? `${url.pathname}${url.search}` : url.toString();
+}
+
+export async function readBlobVideos(listPage: ListPage, configured: boolean, onUnavailable?: () => void) {
+  return (await readBlobMedia(listPage, configured, onUnavailable)).videos;
 }

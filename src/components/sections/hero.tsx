@@ -15,7 +15,7 @@ export function Hero({ media: heroMedia }: { media: HeroMediaData }) {
     category: "Showreel",
     description: "Selected outdoor film and photography production.",
     aspectRatio: "16:9",
-    poster: heroMedia.poster,
+    poster: heroMedia.showreelPoster ?? heroMedia.poster,
     video: heroMedia.showreel ?? { src: heroMedia.showreelUrl!, type: "video/mp4" },
   }) : null, [heroMedia]);
 

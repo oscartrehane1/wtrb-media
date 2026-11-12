@@ -1,8 +1,40 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { matchBlobVideo, readBlobVideos, type VideoBlob } from "./blob-media-resolver.ts";
+import { matchBlobVideo, readBlobMedia, readBlobVideos, type VideoBlob } from "./blob-media-resolver.ts";
 
 const source = "https://example.public.blob.vercel-storage.com/work-02.mp4";
+
+test("private thumbnails are versioned same-origin URLs; WebP wins independently of listing order", async () => {
+  const jpg = { ...blob("work-01.jpg"), url: "https://example.private.blob.vercel-storage.com/work-01.jpg" };
+  const webp = { ...blob("work-01.webp"), url: "https://example.private.blob.vercel-storage.com/work-01.webp" };
+  for (const blobs of [[jpg, webp], [webp, jpg]]) {
+    const result = await readBlobMedia(async () => ({ blobs, hasMore: false }), true);
+    assert.match(result.thumbnails["work-01"], /^\/api\/thumbnails\/work-01\.webp\?v=/);
+    assert.doesNotMatch(result.thumbnails["work-01"], /private\.blob/);
+    assert.deepEqual(result.videos, {});
+  }
+});
+
+test("thumbnail replacement, deletion and rename refresh independently of video slots", async () => {
+  const load = (blobs: VideoBlob[]) => readBlobMedia(async () => ({ blobs: [blob("work-01.mp4"), ...blobs], hasMore: false }), true);
+  const original = await load([blob("work-01.jpg")]);
+  const replacement = await load([blob("work-01.jpg", "replacement")]);
+  assert.notEqual(original.thumbnails["work-01"], replacement.thumbnails["work-01"]);
+  for (const blobs of [[], [blob("archived-work-01.jpg"), blob("work-01-random.jpg"), blob("images/work-01.jpg"), blob("work-05.webp"), blob("hero-desktop.jpg")]]) {
+    const result = await load(blobs);
+    assert.deepEqual(result.thumbnails, {});
+    assert.ok(result.videos["work-01"]);
+  }
+  assert.ok((await load([blob("showreel.jpg")])).thumbnails.showreel);
+});
+
+test("failed image listings never retain a partial thumbnail map", async () => {
+  const result = await readBlobMedia(async ({ cursor }) => {
+    if (cursor) throw new Error("provider details");
+    return { blobs: [blob("work-01.jpg")], hasMore: true, cursor: "next" };
+  }, true);
+  assert.deepEqual(result, { videos: {}, thumbnails: {} });
+});
 
 function blob(pathname: string, etag = "version-1", uploadedAt = new Date("2026-01-01")): VideoBlob {
   return { pathname, url: `https://example.public.blob.vercel-storage.com/${pathname}`, etag, uploadedAt };

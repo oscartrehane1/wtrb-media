@@ -67,6 +67,28 @@ The privacy page identifies WtRB Media as the data controller and uses `hello@wt
 
 ### Automatic video assignment from Vercel Blob
 
+#### Uploading videos and thumbnails — no deployment needed
+
+Open the existing **wtrb-media** project in Vercel, choose **Storage → wtrb-media-blob → Files**, and upload directly into the store root (not a folder). Keep the store **Private** and its existing project connection unchanged. Give the file its exact name before uploading; avoid any random suffix option.
+
+| Position | Video filename | Optional matching thumbnail |
+| --- | --- | --- |
+| Desktop hero | `hero-desktop.mp4` | Uses the existing hero poster |
+| Mobile hero | `hero-mobile.mp4` | Uses the existing hero poster |
+| Showreel | `showreel.mp4` | `showreel.webp` or `showreel.jpg` |
+| First Selected Work | `work-01.mp4` | `work-01.webp` or `work-01.jpg` |
+| Second Selected Work | `work-02.mp4` | `work-02.webp` or `work-02.jpg` |
+| Third Selected Work | `work-03.mp4` | `work-03.webp` or `work-03.jpg` |
+| Fourth Selected Work | `work-04.mp4` | `work-04.webp` or `work-04.jpg` |
+
+For a thumbnail, export a compressed **16:9 JPG or WebP**, ideally around **1600 × 900 pixels**, and upload it alongside the video. Images must be under 8 MB and have the correct JPEG/WebP file type. The website crops cards to 16:9; the opened film keeps its original proportions. The showreel image is its player poster, not a replacement hero background.
+
+To replace a thumbnail, overwrite the exact filename if the dashboard offers that option, otherwise delete the old file and upload the replacement with exactly the same name. To remove it, delete it or rename it to something like `archived-work-01.jpg`. If both JPG and WebP exist, **WebP takes priority**; remove both to restore the original poster or designed fallback. Suffixed, nested and archived filenames are ignored. An image alone does not add a film or change project titles/order.
+
+Allow **about 1–2 minutes**, then refresh the page. The homepage checks filenames on its 60-second regeneration cycle; the first visit after expiry can still show the previous page while refreshing in the background. Each replacement gets a new image-cache key. Responsive image variants have a minimum 60-second cache, but removed images stop being referenced after the page refreshes. An already-open tab needs reloading. No redeployment is required.
+
+Cards use the matching uploaded image, then the project's existing poster, then a designed fallback. They deliberately do not download full films to extract preview frames. Private thumbnail reads use the server-only, exact-name `/api/thumbnails/[filename]` route; Next.js delivers appropriately sized image variants without exposing storage credentials. Like the films, approved thumbnails are publicly viewable through the website, while other store files remain inaccessible through these routes.
+
 **One-time setup:** The existing **Private** `wtrb-media-blob` store is connected to **wtrb-media → Production and Preview** using managed **OIDC** (verified in the Vercel dashboard). Keep that connection and its default `BLOB` prefix; no token needs copying or sharing. Vercel supplies `BLOB_STORE_ID` and manages rotating authentication. The website serves only the approved video filenames through its own streaming route; unrelated files remain private. A correctly named video is intentionally published for website visitors even though the storage bucket stays private. Routine video changes need no code edits or redeployments.
 
 **Upload:** Open **Storage → wtrb-media-blob → Browse**, upload your web-ready video and check its stored filename against this table. Use these exact lowercase names at the root of the store, with no folder or random suffix. If upload options add a random suffix, disable it or rename the stored file to the exact name after uploading:

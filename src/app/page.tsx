@@ -11,16 +11,17 @@ import { Sectors } from "@/components/sections/sectors";
 import { Strategy } from "@/components/sections/strategy";
 import { photographyItems } from "@/content/photography";
 import { heroMedia, portfolioProjects } from "@/content/portfolio";
-import { getBlobVideos } from "@/lib/blob-media";
+import { getBlobMedia } from "@/lib/blob-media";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const videos = await getBlobVideos();
-  const resolvedHero = { ...heroMedia, desktop: videos["hero-desktop"] ?? heroMedia.desktop, mobile: videos["hero-mobile"] ?? heroMedia.mobile, showreel: videos.showreel ?? heroMedia.showreel };
+  const { videos, thumbnails } = await getBlobMedia();
+  const resolvedHero = { ...heroMedia, desktop: videos["hero-desktop"] ?? heroMedia.desktop, mobile: videos["hero-mobile"] ?? heroMedia.mobile, showreel: videos.showreel ?? heroMedia.showreel, showreelPoster: thumbnails.showreel ?? heroMedia.showreelPoster };
   const projects = portfolioProjects.map((project, index) => {
     const video = videos[`work-${String(index + 1).padStart(2, "0")}`];
-    return video ? { ...project, video, youtubeVideoId: undefined, externalUrl: undefined } : project;
+    const poster = thumbnails[`work-${String(index + 1).padStart(2, "0")}`] ?? project.poster;
+    return video ? { ...project, poster, video, youtubeVideoId: undefined, externalUrl: undefined } : { ...project, poster };
   });
   const structuredData = {
     "@context": "https://schema.org",

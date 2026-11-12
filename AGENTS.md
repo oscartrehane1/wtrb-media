@@ -48,8 +48,8 @@ The single page should contain, in order:
 - WtRB Media is the commercially focused sister brand of Where the Road Bends Adventures.
 - Use the primarily typographic wordmark **WtRB MEDIA**. Do not recreate or approximate the Adventures mountain-and-road illustration; original vector assets will be supplied later.
 - Reserve a small secondary-brand-mark position in the footer.
-- Major headlines and editorial statements use Playfair Display.
-- Navigation, body copy, buttons, metadata, and forms use Inter.
+- Manrope is the approved typeface throughout: light/medium hero statements, medium section headings, regular body copy, and medium/semibold UI labels.
+- Portfolio thumbnail cards use 16:9 crops; expanded playback retains the original video aspect ratio. Optional exact-name JPG/WebP thumbnails are resolved server-side from the existing private Blob store.
 - Approved palette: Obsidian `#101312`, Charcoal `#252B2A`, Ivory `#F3F0E9`, Sage grey `#87918A`, and Stone `#B1A08C`.
 - Keep the experience overwhelmingly monochromatic; commissioned film and photography provide colour.
 - The approved creative tone is sophisticated, editorial, minimalist, and commercially focused while retaining an outdoors-rooted character.

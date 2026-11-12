@@ -11,6 +11,7 @@ export type HeroMedia = {
   poster: string | null;
   showreelUrl?: string;
   showreel?: MediaSource;
+  showreelPoster?: string;
 };
 
 export type PortfolioProject = {
