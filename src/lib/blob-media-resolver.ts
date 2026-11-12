@@ -1,15 +1,17 @@
 import type { MediaSource } from "@/types/media";
+import { parseProjectAssetFilename } from "./media-filenames.ts";
 
 export type VideoBlob = { pathname: string; url: string; uploadedAt: Date; etag: string };
 type BlobPage = { blobs: VideoBlob[]; hasMore: boolean; cursor?: string };
 type ListPage = (options: { cursor?: string; limit: number; abortSignal: AbortSignal }) => Promise<BlobPage>;
 
 export function isVideoFilename(pathname: string) {
-  return /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.test(pathname);
+  const project = parseProjectAssetFilename(pathname);
+  return /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.test(pathname) || Boolean(project && !project.image);
 }
 
 export function isThumbnailFilename(pathname: string) {
-  return /^(showreel|work-0[1-4])\.(jpg|webp)$/.test(pathname);
+  return /^(showreel|work-0[1-4])\.(jpg|webp)$/.test(pathname) || Boolean(parseProjectAssetFilename(pathname)?.image);
 }
 
 function blobAccess(source: string) {
@@ -29,14 +31,13 @@ function thumbnailSource(blob: VideoBlob) {
 }
 
 export function matchBlobVideo(pathname: string, source: string): { slot: string; video: MediaSource } | null {
-  const match = /^(hero-desktop|hero-mobile|showreel|work-0[1-4])\.(mp4|webm)$/.exec(pathname);
-  if (!match) return null;
+  if (!isVideoFilename(pathname)) return null;
   try {
     const url = new URL(source);
     const publicBlob = url.hostname.endsWith(".public.blob.vercel-storage.com");
     const privateBlob = url.hostname.endsWith(".private.blob.vercel-storage.com");
     if (url.protocol !== "https:" || (!publicBlob && !privateBlob) || url.username || url.password) return null;
-    return { slot: match[1], video: { src: privateBlob ? `/api/media/${pathname}` : source, type: match[2] === "mp4" ? "video/mp4" : "video/webm" } };
+    return { slot: pathname.replace(/\.(mp4|webm)$/, ""), video: { src: privateBlob ? `/api/media/${pathname}` : source, type: pathname.endsWith(".mp4") ? "video/mp4" : "video/webm" } };
   } catch {
     return null;
   }
@@ -50,9 +51,13 @@ export async function readBlobMedia(listPage: ListPage, configured: boolean, onU
   let cursor: string | undefined;
   const seen = new Set<string>();
   const candidates = new Map<string, VideoBlob>();
+  let pages = 0;
   const abortSignal = AbortSignal.timeout(10_000);
   try {
     do {
+      // At most 10,000 listed objects and ten requests per refresh, including
+      // unrelated files. Fail closed rather than publish an incomplete listing.
+      if (++pages > 10) throw new Error("Blob listing exceeds discovery budget");
       const page = await listPage({ cursor, limit: 1000, abortSignal });
       for (const blob of page.blobs) {
         if (!matchBlobVideo(blob.pathname, blob.url) && !thumbnailSource(blob)) continue;

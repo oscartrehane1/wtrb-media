@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       ...["showreel", "work-01", "work-02", "work-03", "work-04"].flatMap((slot) =>
         ["jpg", "webp"].map((extension) => ({ pathname: `/api/thumbnails/${slot}.${extension}` })),
       ),
+      // The image route itself validates canonical project names and formats.
+      ...["work-01", "work-02", "work-03", "work-04"].flatMap((slot) =>
+        ["jpg", "webp"].map((extension) => ({ pathname: `/api/thumbnails/${slot}-*.${extension}` })),
+      ),
     ],
   },
 };

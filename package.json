@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
-    "test": "node --no-warnings --experimental-strip-types --test src/lib/enquiry/*.test.ts src/lib/blob-media.test.ts src/lib/private-video.test.ts src/lib/private-thumbnail.test.ts src/lib/image-config.test.ts"
+    "test": "node --no-warnings --experimental-strip-types --test src/lib/enquiry/*.test.ts src/lib/blob-media.test.ts src/lib/private-video.test.ts src/lib/private-thumbnail.test.ts src/lib/image-config.test.ts src/lib/case-study-media.test.ts src/lib/case-study-render.test.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.9.0",

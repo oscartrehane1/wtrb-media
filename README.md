@@ -67,6 +67,32 @@ The privacy page identifies WtRB Media as the data controller and uses `hello@wt
 
 ### Automatic video assignment from Vercel Blob
 
+#### Case-study media — upload only the formats a project needs
+
+In **Vercel → wtrb-media → Storage → wtrb-media-blob → Files**, upload into the root with these exact names. Keep the store Private. Substitute `work-02`, `work-03` or `work-04` for the appropriate existing portfolio position.
+
+| Asset | Example | Alternative |
+| --- | --- | --- |
+| Landscape film (16:9) | `work-01-landscape.mp4` | `.webm` |
+| Vertical films (9:16) | `work-01-vertical-01.mp4`, `work-01-vertical-02.mp4` | `.webm` |
+| Photographs | `work-01-photo-01.jpg`, `work-01-photo-02.jpg` | `.webp` |
+| Optional landscape poster | `work-01-landscape.jpg` | `.webp` |
+| Optional vertical poster | `work-01-vertical-01.jpg` | `.webp` |
+
+Continue numbering `01`–`99`, then `100`–`999`. Gaps are fine; assets sort by number, not upload time. Use `01`, not `1` or `001`. Numbers above 999, random suffixes, folders and archive names are ignored. Photography can have any orientation; gallery thumbnails are editorial crops and the lightbox shows the full image. Keep photos and posters below **8 MB** each; upload compressed web exports, not camera originals. Films must actually match their named orientation: Blob does not inspect or transcode them.
+
+Only populated categories appear. Photography-only and vertical-only projects do not get an empty landscape player. Posters without their films do not create players. With no available media, the page shows a compact project-level message. Films attach only when a visitor explicitly opens their player; standard controls, muted playback and existing YouTube consent are preserved.
+
+**Homepage compatibility:** `work-01.mp4` and the other original slot names keep their current homepage behaviour. Dedicated `-landscape` files take precedence on case studies. Reusing a homepage film is opt-in via the case study's `homepageLandscapeConfirmed` flag and requires a linked 16:9 project. A card's 16:9 crop does not confirm the uploaded film's orientation. Uploading a dedicated `-landscape` film needs no flag or redeployment.
+
+Oslo is explicitly enabled to reuse the existing `work-01.mp4`, verified from its native video metadata as **1920 × 1080** on 12 November 2026. No duplicate upload is needed. Keep replacements for that legacy filename landscape; if its orientation changes, remove the confirmation rather than displaying it in a 16:9 player.
+
+**Replace/remove:** Overwrite the exact name, or delete the old file before uploading its replacement. Delete or rename an asset outside the naming convention to remove it. MP4 wins over WebM; WebP wins over JPG, independently of upload age. Remove both alternatives to empty a position. Existing configured media remains the fallback. Allow approximately **1–2 minutes** and reload: case-study pages and home regenerate every 60 seconds. The first visit after expiry can trigger background regeneration; an open player/tab is not updated automatically. Image URLs include upload versions and optimised variants have a 60-second minimum cache. Raw private media routes remain `no-store`.
+
+Discovery shares one complete paginated store listing per page regeneration, not one request per filename. It has a 10-second timeout and a hard limit of ten pages of 1,000 objects (including unrelated files). An outage or listing larger than this budget uses configured fallbacks rather than publishing a partial set; an administrator must review the store/discovery budget if it grows that large.
+
+Each existing case-study record links to its slot with `mediaSlot` in `src/content/case-studies.ts`. Uploads then update that page without code changes. Uploading files does **not** create a new project route, client relationship or campaign claim: currently Oslo is the only authored case study. The naming system supports all four positions when their editorial case studies are supplied. Titles, status, descriptions, credits and outcomes remain separate editorial data; Oslo remains an independent, uncommissioned concept. Optional `media.photoDescriptions` entries keyed by `work-01-photo-01` provide subject-specific alt text/captions; otherwise neutral project-title/number labels are used without guessing image contents.
+
 #### Uploading videos and thumbnails — no deployment needed
 
 Open the existing **wtrb-media** project in Vercel, choose **Storage → wtrb-media-blob → Files**, and upload directly into the store root (not a folder). Keep the store **Private** and its existing project connection unchanged. Give the file its exact name before uploading; avoid any random suffix option.

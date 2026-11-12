@@ -34,6 +34,9 @@ export type ProjectClassification = "Commissioned client work" | "Independent ca
 
 export type CaseStudy = {
   slug: string;
+  mediaSlot?: "work-01" | "work-02" | "work-03" | "work-04";
+  /** Explicit confirmation of the actual legacy film, not its card's crop. */
+  homepageLandscapeConfirmed?: boolean;
   title: string;
   classification: ProjectClassification;
   disclaimer?: string;
@@ -54,8 +57,21 @@ export type CaseStudy = {
     youtubeVideoId?: string;
     poster: string | null;
     photography: readonly PhotographyItem[];
+    photoDescriptions?: Readonly<Record<string, { alt: string; caption?: string }>>;
   };
 };
+
+export type CaseStudyFilm = {
+  id: string;
+  label: string;
+  aspectRatio: "16:9" | "9:16";
+  video: MediaSource | null;
+  youtubeVideoId?: string;
+  poster: string | null;
+};
+
+export type CaseStudyPhoto = { id: string; src: string; alt: string; caption: string };
+export type ResolvedCaseStudyMedia = { landscape: CaseStudyFilm | null; vertical: CaseStudyFilm[]; photography: CaseStudyPhoto[] };
 
 export type PhotographyItem = {
   id: string;

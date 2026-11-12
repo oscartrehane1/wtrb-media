@@ -142,6 +142,7 @@ Keep section composition in `components/sections`, reusable primitives in `compo
 - `src/types/media.ts` defines the supported media contracts and aspect ratios.
 - Components must render a deliberate placeholder when a media path is `null`; never request a guessed or missing path.
 - Portfolio grid videos are poster-first and must not autoplay. Full video is attached only in the user-opened player.
+- Case studies use optional `mediaSlot` mappings and filename-discovered landscape, numbered vertical and photography assets. Hide absent categories, preserve editorial metadata, and never infer a legacy film's orientation from its homepage card crop. Homepage landscape reuse requires explicit confirmation. Keep numbered assets canonical (01–999), discovery bounded and private route filename validation aligned with the resolver.
 - Prefer unlisted YouTube delivery through a configurable `youtubeVideoId`. Create the IFrame Player API instance only after the overlay opens, use the `youtube-nocookie.com` host, and begin muted with standard controls available.
 - Preserve native MP4/WebM playback as the fallback when no YouTube ID is configured.
 - The hero may autoplay only the viewport-appropriate muted source. Do not attach both desktop and mobile sources to the video element.

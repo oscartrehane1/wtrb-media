@@ -3,6 +3,10 @@ import type { CaseStudy } from "@/types/media";
 export const caseStudies: CaseStudy[] = [
   {
     slug: "oslo-before-the-winter",
+    mediaSlot: "work-01",
+    // Verified native video metadata: existing work-01.mp4 is 1920 × 1080.
+    // Keep legacy replacements landscape, or remove this confirmation.
+    homepageLandscapeConfirmed: true,
     title: "Oslo, Before the Winter",
     classification: "Independent campaign concept",
     disclaimer: "Independently produced by WtRB Media. This project was not commissioned or endorsed by VisitOSLO.",

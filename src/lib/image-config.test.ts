@@ -13,6 +13,9 @@ test("Next image configuration accepts versioned private thumbnails without open
     }
   }
   assert.equal(hasLocalMatch(patterns, "/media/posters/local.jpg"), true);
+  assert.equal(hasLocalMatch(patterns, "/api/thumbnails/work-01-photo-100.webp?v=replacement"), true);
+  assert.equal(hasLocalMatch(patterns, "/api/thumbnails/work-04-vertical-99.jpg?v=replacement"), true);
+  assert.equal(hasLocalMatch(patterns, "/api/thumbnails/work-05-photo-01.jpg?v=1"), false);
   for (const path of ["/api/thumbnails/secret.jpg?v=1", "/api/thumbnails/work-01.svg?v=1", "/api/media/work-01.mp4?v=1", "/other.jpg?v=1"]) {
     assert.equal(hasLocalMatch(patterns, path), false);
   }
