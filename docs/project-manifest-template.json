@@ -1,0 +1,16 @@
+{
+  "slug": "your-project-slug",
+  "title": "Replace with the project title",
+  "subtitle": "Replace with a short editorial subtitle",
+  "sector": "Replace with the actual sector",
+  "projectType": "Replace with the actual project type",
+  "status": "independent",
+  "summary": "Replace with an accurate project summary.",
+  "campaignObjective": "Replace with the actual objective.",
+  "targetAudience": "Replace with the intended audience.",
+  "creativeStrategy": "Replace with the actual creative approach.",
+  "deliverables": ["Replace with the actual deliverables"],
+  "displayOrder": 10,
+  "featured": false,
+  "publicationStatus": "draft"
+}

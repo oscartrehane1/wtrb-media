@@ -93,7 +93,29 @@ Discovery shares one complete paginated store listing per page regeneration, not
 
 Each existing case-study record links to its slot with `mediaSlot` in `src/content/case-studies.ts`. Uploads then update that page without code changes. Uploading files does **not** create a new project route, client relationship or campaign claim: currently Oslo is the only authored case study. The naming system supports all four positions when their editorial case studies are supplied. Titles, status, descriptions, credits and outcomes remain separate editorial data; Oslo remains an independent, uncommissioned concept. Optional `media.photoDescriptions` entries keyed by `work-01-photo-01` provide subject-specific alt text/captions; otherwise neutral project-title/number labels are used without guessing image contents.
 
-#### Uploading videos and thumbnails — no deployment needed
+#### Publishing portfolio projects — no deployment needed
+
+1. Choose a permanent slug: lower-case letters, digits and single hyphens, up to 64 characters (for example, `autumn-on-the-coast`). In the **private** WtRB Media Blob store, upload objects with the exact prefix `projects/your-slug/`. Blob treats these as object names, even if the dashboard displays folders. Disable random filename suffixes.
+2. Copy [the project manifest template](docs/project-manifest-template.json), edit it in a text editor and save it as `project.json`. Match its `slug` to the prefix exactly. Replace all example copy. Set `status` to `commissioned` or `independent` as appropriate. Use a plain JSON list for `deliverables`. You can add `verifiedResults` as a list of substantiated statements and `photoAlt` as an object mapping names such as `photo-01` to useful visual descriptions; omit either when unavailable. Other custom fields aren't accepted. Save as UTF-8, no comments, and keep it under 32 KB.
+3. Upload the manifest as `projects/your-slug/project.json` with `publicationStatus` set to `draft` while preparing the project. Upload any of the following assets under the same prefix:
+
+   | Purpose | Example object filename |
+   | --- | --- |
+   | Cover (recommended, 16:9) | `cover.jpg` or `cover.webp` |
+   | Landscape film | `landscape-01.mp4` or `landscape-01.webm` |
+   | Vertical film | `vertical-01.mp4` or `vertical-01.webm` |
+   | Film poster | `landscape-01.jpg` or `vertical-01.webp` |
+   | Photograph | `photo-01.jpg` or `photo-01.webp` |
+
+   Use `01`–`99`, then `100`–`999`. Gaps are fine. MP4 takes priority over WebM, and WebP over JPG. Film orientations must match their names. Use compressed web exports: images must be under 8 MB and are served at uploaded resolution. A missing cover falls back to a poster, first photograph, or styled card. Missing categories are hidden, and a published project can show editorial copy before its media is available.
+4. When ready, change `publicationStatus` to `published` and **overwrite the same manifest object**, without renaming it. Check `/work` and `/work/your-slug`. Featured items appear first, then lower `displayOrder` numbers (integer 0–9999), then slug for ties. To reorder a project, update its manifest.
+5. To update media, overwrite the exact name or remove the unwanted format. All supported asset names under a published project are eligible for public delivery, so use a draft project (or change it to draft before adding confidential material). To unpublish, overwrite the manifest with `publicationStatus: "draft"`; for new projects, deleting the manifest also works. Do not rename a live slug unless you intend to change its URL.
+
+**Refresh and limits.** Allow roughly **1–2 minutes under normal traffic**, then reload. The 60-second catalogue cache and the 60-second page regeneration can each require a subsequent request to refresh; quiet sites or storage failures can take longer. Direct case pages and media check publication at request time, independent of stale homepage links; this cannot recall already delivered or third-party-cached copies. Discovery is capped at 4,000 listed objects under `projects/` and 100 manifests (including drafts). Invalid manifests are omitted; a storage outage or exhausted listing budget will not publish a partial discovery.
+
+**Oslo migration.** `/work/oslo-before-the-winter` and its current `work-01` uploads continue to work with no migration step. To manage Oslo metadata in Blob, upload a published manifest for that exact slug. Existing Oslo media fills categories that do not have scoped uploads, so films need not be copied. To keep Oslo unpublished, **leave its draft manifest in place**: removing it restores the original compatibility project. Root hero/showreel filenames are unchanged. The old root `work-02` through `work-04` endpoints remain supported, but these slots no longer create portfolio cards; use scoped paths when publishing new projects.
+
+#### Uploading legacy videos and thumbnails — no deployment needed
 
 Open the existing **wtrb-media** project in Vercel, choose **Storage → wtrb-media-blob → Files**, and upload directly into the store root (not a folder). Keep the store **Private** and its existing project connection unchanged. Give the file its exact name before uploading; avoid any random suffix option.
 
@@ -107,7 +129,7 @@ Open the existing **wtrb-media** project in Vercel, choose **Storage → wtrb-me
 | Third Selected Work | `work-03.mp4` | `work-03.webp` or `work-03.jpg` |
 | Fourth Selected Work | `work-04.mp4` | `work-04.webp` or `work-04.jpg` |
 
-For a thumbnail, export a compressed **16:9 JPG or WebP**, ideally around **1600 × 900 pixels**, and upload it alongside the video. Images must be under 8 MB and have the correct JPEG/WebP file type. The website crops cards to 16:9; the opened film keeps its original proportions. The showreel image is its player poster, not a replacement hero background.
+For a thumbnail, export a compressed **16:9 JPG or WebP**, ideally around **1600 × 900 pixels**, and upload it alongside the video. Keep images under 8 MB. If your exporter leaves PNG data under an approved `.jpg` filename, the private image route can serve it as PNG; a `.png` filename is not recognised. The website crops cards to 16:9; the opened film keeps its original proportions. The showreel image is its player poster, not a replacement hero background.
 
 To replace a thumbnail, overwrite the exact filename if the dashboard offers that option, otherwise delete the old file and upload the replacement with exactly the same name. To remove it, delete it or rename it to something like `archived-work-01.jpg`. If both JPG and WebP exist, **WebP takes priority**; remove both to restore the original poster or designed fallback. Suffixed, nested and archived filenames are ignored. An image alone does not add a film or change project titles/order.
 

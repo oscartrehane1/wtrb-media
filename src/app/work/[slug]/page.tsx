@@ -4,35 +4,30 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { CaseStudyMedia } from "@/components/media/case-study-media";
-import { caseStudies, getCaseStudy } from "@/content/case-studies";
-import { portfolioProjects } from "@/content/portfolio";
-import { getBlobMedia } from "@/lib/blob-media";
-import { resolveCaseStudyMedia } from "@/lib/case-study-media-resolver";
+import { getPublicProject } from "@/lib/public-projects";
 
 type CaseStudyPageProps = { params: Promise<{ slug: string }> };
 
-export const dynamicParams = false;
-export const revalidate = 60;
-
-export function generateStaticParams() {
-  return caseStudies.map(({ slug }) => ({ slug }));
-}
+// The catalogue is cached, but direct case-study publication is checked live.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: CaseStudyPageProps): Promise<Metadata> {
-  const study = getCaseStudy((await params).slug);
-  if (!study) return {};
+  const project = await getPublicProject((await params).slug);
+  if (!project) return { robots: { index: false, follow: false } };
+  const { study, socialImage } = project;
   return {
     title: study.title,
     description: study.summary,
     alternates: { canonical: `/work/${study.slug}` },
-    openGraph: { title: `${study.title} — WtRB Media`, description: study.summary, url: `/work/${study.slug}` },
+    openGraph: { title: `${study.title} — WtRB Media`, description: study.summary, url: `/work/${study.slug}`, images: [socialImage ?? "/opengraph-image"] },
+    twitter: { card: "summary_large_image", title: study.title, description: study.summary, images: [socialImage ?? "/opengraph-image"] },
   };
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
-  const study = getCaseStudy((await params).slug);
-  if (!study) notFound();
-  const media = resolveCaseStudyMedia(study, await getBlobMedia(), portfolioProjects.find((project) => project.caseStudySlug === study.slug));
+  const project = await getPublicProject((await params).slug);
+  if (!project) notFound();
+  const { study, media } = project;
 
   return (
     <>
@@ -42,6 +37,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         <header className="case-study__hero page-shell">
           <p className="eyebrow">{study.classification}</p>
           <h1>{study.title}</h1>
+          {study.subtitle ? <p className="eyebrow">{study.subtitle}</p> : null}
           <p className="case-study__summary">{study.summary}</p>
           <dl><div><dt>Sector</dt><dd>{study.sector}</dd></div><div><dt>Status</dt><dd>{study.status}</dd></div></dl>
           {study.disclaimer ? <p className="case-study__disclaimer">{study.disclaimer}</p> : null}
@@ -50,15 +46,23 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         <CaseStudyMedia study={study} media={media} />
 
         <div className="case-study__content page-shell">
-          <section><p className="eyebrow">01 / Campaign objective</p><h2>Give autumn travel a reason to begin in Oslo.</h2><p>{study.objective}</p></section>
-          <section><p className="eyebrow">02 / Audience</p><h2>Who the idea is designed to move.</h2><p>{study.targetAudience}</p></section>
-          <section><p className="eyebrow">03 / Creative strategy</p><h2>Season, place and discovery.</h2><p>{study.creativeStrategy}</p></section>
-          <section><p className="eyebrow">04 / Production approach</p><h2>A film-led family of assets.</h2><p>{study.productionApproach}</p></section>
+          <section><h2>Campaign objective</h2><p>{study.objective}</p></section>
+          <section><h2>Audience</h2><p>{study.targetAudience}</p></section>
+          <section><h2>Creative strategy</h2><p>{study.creativeStrategy}</p></section>
+          {study.productionApproach ? <section><h2>Production approach</h2><p>{study.productionApproach}</p></section> : null}
 
-          <section className="case-study__list"><p className="eyebrow">05 / Planned deliverables</p><ul>{study.deliverables.map((item) => <li key={item}>{item}</li>)}</ul></section>
-          <section className="case-study__list"><p className="eyebrow">06 / Intended channels</p><ul>{study.distributionChannels.map((item) => <li key={item}>{item}</li>)}</ul></section>
-          <section className="case-study__list"><p className="eyebrow">07 / Success measures</p><p className="case-study__note">No results are presented: this is an independent concept. These are the measures that would frame evaluation.</p><ul>{study.successMeasures.map((item) => <li key={item}>{item}</li>)}</ul></section>
-          <section className="case-study__list"><p className="eyebrow">Credits</p><ul>{study.credits.map((item) => <li key={item}>{item}</li>)}</ul></section>
+          {([
+            ["Deliverables", study.deliverables],
+            ["Intended channels", study.distributionChannels],
+            ["Success measures", study.successMeasures],
+            ["Verified results", study.results ?? []],
+            ["Credits", study.credits],
+          ] as const).map(([heading, items]) => items.length ? (
+            <section className="case-study__list" key={heading}><h2>{heading}</h2>
+              {heading === "Success measures" ? <p className="case-study__note">No results are presented: these are the measures that would frame evaluation.</p> : null}
+              <ul>{items.map((item, index) => <li key={index}>{item}</li>)}</ul>
+            </section>
+          ) : null)}
         </div>
 
         <section className="detail-cta page-shell" aria-labelledby="case-study-cta-title">

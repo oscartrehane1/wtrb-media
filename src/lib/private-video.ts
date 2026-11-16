@@ -9,8 +9,13 @@ type VideoStore = {
 
 /** Approved filenames intentionally publish website videos; all other paths stay private. */
 export async function servePrivateVideo(request: Request, filename: string, store: VideoStore) {
+  if (!isVideoFilename(filename)) return new Response(null, { status: 404, headers: { "Cache-Control": "no-store" } });
+  return streamApprovedVideo(request, filename, store);
+}
+
+/** Caller must validate the name and authorise publication before calling. */
+export async function streamApprovedVideo(request: Request, filename: string, store: VideoStore) {
   const headers = new Headers({ "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" });
-  if (!isVideoFilename(filename)) return new Response(null, { status: 404, headers });
   try {
     const metadata = await store.metadata(filename);
     if (!metadata) return new Response(null, { status: 404, headers });

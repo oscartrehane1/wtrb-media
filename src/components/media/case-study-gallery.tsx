@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useDialog } from "@/components/media/use-dialog";
+import { isPublicationGatedImage } from "@/lib/project-images";
 import type { CaseStudyPhoto } from "@/types/media";
 
 export function CaseStudyGallery({ title, images }: { title: string; images: CaseStudyPhoto[] }) {
@@ -13,7 +14,7 @@ export function CaseStudyGallery({ title, images }: { title: string; images: Cas
   const current = active === null ? null : images[active];
   const image = (item: CaseStudyPhoto, expanded = false) => failed.includes(item.src)
     ? <span className="case-photos__unavailable">Image unavailable</span>
-    : <Image src={item.src} alt={item.alt} fill loading="lazy" sizes={expanded || images.length === 1 || (images.length % 3 === 0 && item.id === images[0].id) ? "90vw" : "(min-width: 1200px) 45vw, (min-width: 768px) 48vw, 90vw"} onError={() => setFailed((previous) => previous.includes(item.src) ? previous : [...previous, item.src])} />;
+    : <Image src={item.src} alt={item.alt} fill loading="lazy" unoptimized={isPublicationGatedImage(item.src)} sizes={expanded || images.length === 1 || (images.length % 3 === 0 && item.id === images[0].id) ? "90vw" : "(min-width: 1200px) 45vw, (min-width: 768px) 48vw, 90vw"} onError={() => setFailed((previous) => previous.includes(item.src) ? previous : [...previous, item.src])} />;
 
   return (
     <section className="case-media__section" aria-labelledby="project-photography-title">

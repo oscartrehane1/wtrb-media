@@ -10,19 +10,15 @@ import { Services } from "@/components/sections/services";
 import { Sectors } from "@/components/sections/sectors";
 import { Strategy } from "@/components/sections/strategy";
 import { photographyItems } from "@/content/photography";
-import { heroMedia, portfolioProjects } from "@/content/portfolio";
+import { heroMedia } from "@/content/portfolio";
 import { getBlobMedia } from "@/lib/blob-media";
+import { getPublicProjects } from "@/lib/public-projects";
 
 export const revalidate = 60;
 
 export default async function Home() {
-  const { videos, thumbnails } = await getBlobMedia();
+  const [{ videos, thumbnails }, projects] = await Promise.all([getBlobMedia(), getPublicProjects()]);
   const resolvedHero = { ...heroMedia, desktop: videos["hero-desktop"] ?? heroMedia.desktop, mobile: videos["hero-mobile"] ?? heroMedia.mobile, showreel: videos.showreel ?? heroMedia.showreel, showreelPoster: thumbnails.showreel ?? heroMedia.showreelPoster };
-  const projects = portfolioProjects.map((project, index) => {
-    const video = videos[`work-${String(index + 1).padStart(2, "0")}`];
-    const poster = thumbnails[`work-${String(index + 1).padStart(2, "0")}`] ?? project.poster;
-    return video ? { ...project, poster, video, youtubeVideoId: undefined, externalUrl: undefined } : { ...project, poster };
-  });
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -41,7 +37,7 @@ export default async function Home() {
       <SiteHeader />
       <main id="main-content">
         <Hero media={resolvedHero} />
-        <Portfolio projects={projects} />
+        <Portfolio projects={projects.map(({ card }) => card)} />
         <PhotographyGallery items={photographyItems} />
         <Strategy />
         <Services />

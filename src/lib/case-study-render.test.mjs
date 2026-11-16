@@ -22,9 +22,11 @@ for (const extension of [".tsx", ".ts"]) {
   };
 }
 let CaseStudyMedia;
+let Portfolio;
 let study;
 try {
   ({ CaseStudyMedia } = require("../components/media/case-study-media.tsx"));
+  ({ Portfolio } = require("../components/sections/portfolio.tsx"));
   ({ caseStudies: [study] } = require("../content/case-studies.ts"));
 } finally {
   for (const [index, extension] of [".tsx", ".ts"].entries()) {
@@ -67,4 +69,25 @@ test("responsive media contracts preserve ratios, bounded vertical widths and re
   assert.match(css, /\.case-media__vertical \{[^}]*auto-fit[^}]*min\(100%, 15rem\)/);
   assert.match(css, /\.case-photos \{[^}]*minmax\(0, 1fr\)/);
   assert.match(css, /prefers-reduced-motion: reduce[^}]*\.case-photos__button:hover img \{ transform: none/s);
+});
+
+test("portfolio renders empty, single, pair and grid layouts with native links and play buttons", () => {
+  const card = (id, playable = false) => ({
+    id, title: id, category: "Tourism", clientType: "Independent project", description: "Example",
+    caseStudySlug: id, aspectRatio: "16:9", poster: null,
+    video: playable ? { src: "/never-preload.mp4", type: "video/mp4" } : null,
+  });
+  const cards = [card("first", true), card("second"), card("third")];
+  for (const [count, expected] of [[0, "grid"], [1, "single"], [2, "pair"], [3, "grid"]]) {
+    const html = renderToStaticMarkup(createElement(Portfolio, { projects: cards.slice(0, count) }));
+    assert.match(html, new RegExp(`data-layout="${expected}"`));
+    assert.equal(html.includes("New work will appear here"), count === 0);
+    assert.equal(html.includes('aria-label="Play first"'), count > 0);
+    assert.equal(html.includes('href="/work/second"'), count > 1);
+    assert.doesNotMatch(html, /never-preload|<video|Demonstration project/);
+  }
+  const css = readFileSync(resolve(root, "app/globals.css"), "utf8");
+  assert.match(css, /\.portfolio-grid \{[^}]*grid-template-columns: minmax\(0, 1fr\)/);
+  assert.match(css, /data-layout="single"[^}]*grid-template-columns: minmax\(0, 1fr\)/);
+  assert.match(css, /data-layout="grid"[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
 });

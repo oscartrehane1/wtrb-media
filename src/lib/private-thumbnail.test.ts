@@ -37,3 +37,30 @@ test("rejects incorrect types and oversized images; provider failures remain gen
   assert.equal(failed.status, 503);
   assert.equal(await failed.text(), "");
 });
+
+test("PNG exported under a matching JPG poster filename is served with its real MIME type", async () => {
+  const bytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 0]);
+  const pngStore = {
+    metadata: async () => ({ size: bytes.length, contentType: "image/png", etag: "poster-version" }),
+    read: async () => ({ stream: new ReadableStream<Uint8Array>({ start(c) { c.enqueue(bytes.slice(0, 3)); c.enqueue(bytes.slice(3)); c.close(); } }) }),
+  };
+  const response = await servePrivateThumbnail(request(), "work-01-vertical-01.jpg", pngStore);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("Content-Type"), "image/png");
+  assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.deepEqual(new Uint8Array(await response.arrayBuffer()), bytes);
+  const head = await servePrivateThumbnail(request("HEAD"), "work-01-vertical-01.jpg", { ...pngStore, read: async () => { throw new Error("HEAD must not download"); } });
+  assert.equal(head.status, 200);
+  assert.equal(head.headers.get("Content-Type"), "image/png");
+});
+
+test("PNG alias rejects non-PNG bytes, unsafe MIME types and dishonest size metadata", async () => {
+  const pngMetadata = async () => ({ size: 3, contentType: "image/png", etag: "invalid" });
+  assert.equal((await servePrivateThumbnail(request(), "work-01-vertical-01.jpg", { ...store(), metadata: pngMetadata })).status, 415);
+  for (const contentType of ["image/svg+xml", "text/html", "application/octet-stream"]) {
+    assert.equal((await servePrivateThumbnail(request(), "work-01-vertical-01.jpg", { ...store(), metadata: async () => ({ size: 3, contentType, etag: "invalid" }) })).status, 415);
+  }
+  const oversized = { metadata: pngMetadata, read: async () => ({ stream: new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new Uint8Array(8 * 1024 * 1024 + 1)); c.close(); } }) }) };
+  assert.equal((await servePrivateThumbnail(request(), "work-01-vertical-01.jpg", oversized)).status, 413);
+});

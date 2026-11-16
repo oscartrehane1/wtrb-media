@@ -43,6 +43,7 @@ export type CaseStudy = {
   sector: string;
   status: string;
   summary: string;
+  subtitle?: string;
   objective: string;
   targetAudience: string;
   creativeStrategy: string;
@@ -71,7 +72,7 @@ export type CaseStudyFilm = {
 };
 
 export type CaseStudyPhoto = { id: string; src: string; alt: string; caption: string };
-export type ResolvedCaseStudyMedia = { landscape: CaseStudyFilm | null; vertical: CaseStudyFilm[]; photography: CaseStudyPhoto[] };
+export type ResolvedCaseStudyMedia = { landscape: CaseStudyFilm | null; additionalLandscape?: CaseStudyFilm[]; vertical: CaseStudyFilm[]; photography: CaseStudyPhoto[] };
 
 export type PhotographyItem = {
   id: string;

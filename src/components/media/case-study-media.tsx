@@ -25,7 +25,7 @@ export function CaseStudyMedia({ study, media }: { study: CaseStudy; media: Reso
 
   return (
     <div className="case-media page-shell">
-      {media.landscape ? <section className="case-media__section" aria-labelledby="landscape-title"><h2 id="landscape-title">Landscape film</h2>{filmCard(media.landscape)}</section> : null}
+      {media.landscape ? <section className="case-media__section" aria-labelledby="landscape-title"><h2 id="landscape-title">{media.additionalLandscape?.length ? "Landscape films" : "Landscape film"}</h2>{[media.landscape, ...(media.additionalLandscape ?? [])].map(filmCard)}</section> : null}
       {media.vertical.length ? <section className="case-media__section" aria-labelledby="vertical-title"><h2 id="vertical-title">Vertical films</h2><div className="case-media__vertical">{media.vertical.map(filmCard)}</div></section> : null}
       {media.photography.length ? <CaseStudyGallery title={study.title} images={media.photography} /> : null}
       {!media.landscape && !media.vertical.length && !media.photography.length ? <p className="case-media__empty">Project media will be shared here when available.</p> : null}
