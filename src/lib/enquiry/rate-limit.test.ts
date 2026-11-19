@@ -24,7 +24,17 @@ test("rejects requests over the serverless limit", async () => {
 });
 
 test("fails closed when a configured limiter is incomplete or unavailable", async () => {
-  assert.deepEqual(await checkRateLimit("192.0.2.1", { environment: { ...environment, RATE_LIMIT_SALT: undefined }, fetcher: mockCount(1) }), { allowed: false, configured: true });
+  assert.deepEqual(await checkRateLimit("192.0.2.1", { environment: { ...environment, RATE_LIMIT_SALT: undefined }, fetcher: mockCount(1) }), { allowed: false, configured: true, unavailable: true });
   const failedFetch = (async () => { throw new Error("unavailable"); }) as typeof fetch;
-  assert.deepEqual(await checkRateLimit("192.0.2.1", { environment, fetcher: failedFetch }), { allowed: false, configured: true });
+  assert.deepEqual(await checkRateLimit("192.0.2.1", { environment, fetcher: failedFetch }), { allowed: false, configured: true, unavailable: true });
+});
+test("missing credentials, typo, redirects and malformed provider results fail closed", async () => {
+  for (const env of [{}, { ...environment, UPSTASH_REDIS_REST_URL: undefined }, { ...environment, UPSTASH_REDIS_REST_TOKEN: undefined },
+    { ...environment, UPSTASH_REDIS_REST_URL: "http://example.test" }]) {
+    assert.equal((await checkRateLimit("test", { environment: env, fetcher: mockCount(1) })).unavailable, true);
+  }
+  for (const body of [null, [], [{ result: 0 }, { result: 1 }], [{ result: 1 }, { error: "failed" }], [{ result: "1" }, { result: 1 }]]) {
+    const fetcher = (async () => Response.json(body)) as typeof fetch;
+    assert.equal((await checkRateLimit("test", { environment, fetcher })).unavailable, true);
+  }
 });

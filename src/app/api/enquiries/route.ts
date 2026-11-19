@@ -39,6 +39,7 @@ export async function POST(request: Request) {
   const forwardedFor = request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-forwarded-for") ?? "unknown";
   const identifier = forwardedFor.split(",")[0]?.trim() || "unknown";
   const limit = await checkRateLimit(identifier);
+  if (limit.unavailable) return NextResponse.json({ message: "Unable to send this enquiry right now. Please try again later." }, { status: 503, headers: { "Retry-After": "60" } });
   if (!limit.allowed) return NextResponse.json({ message: "Unable to send this enquiry right now." }, { status: 429 });
 
   const apiKey = process.env.RESEND_API_KEY;
